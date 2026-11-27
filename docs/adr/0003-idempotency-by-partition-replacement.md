@@ -12,3 +12,11 @@ Every Collection Run produces the **complete** set of Cost Records for each part
 - A re-run on the same day, or a retry after failure, yields the same stored state.
 - Normalization can be re-executed from Raw Extracts without calling the provider again, as long as they are within retention.
 - The storage technology must support replacing one partition atomically.
+
+## Amendments (2026-11-27, specification phase)
+
+- **Validate before publish.** A partition is published only after its complete content has been built and validated (complete provider pagination, schema, partition membership of every row). Anything less leaves the previously published partition untouched.
+- **Per-partition outcome.** Partitions that validate are published even when others in the same Collection Run fail; the run then ends with a failure status. One failing Sub Account does not freeze the others.
+- **Never replace data with nothing.** Replacing a non-empty partition with an empty one is refused and treated as a failure for that partition.
+- **No concurrent writers.** Scheduled runs are serialized by a workflow concurrency group, and every publish is conditional on the partition version read at the start of the run, so a concurrent writer (e.g. a local run) causes a failure instead of a silent overwrite. Blob versioning (ADR-0008) keeps previous versions.
+- **Final partitions are rewritten only by an explicit Targeted Re-collection** requested by the Operator.

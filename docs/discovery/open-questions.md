@@ -18,7 +18,10 @@ Tracked during product discovery. Resolved items move to `GLOSSARY.md` or `docs/
 
 ## Open questions
 
-- **Finality cutoff vs provider billing periods.** Azure pay-as-you-go (MOSP) invoices follow a billing period anchored on the subscription's sign-up day, not the calendar month. The Provisional → Final cutoff must be defined against the provider's restatement window, not only "day N of the next calendar month". To settle together with the idempotency/re-collection design.
+- ~~Finality cutoff vs provider billing periods.~~ **Resolved (specification phase):** a provider-agnostic Re-collection Window of 45 days; see `product-brief.md`.
+- **Cost basis when EffectiveCost is unavailable.** MOSP data has no amortized cost; under the no-fabrication rule EffectiveCost may be null. The specification uses EffectiveCost when populated for a whole series and BilledCost otherwise, and the Report states the basis used. Confirm after the spike.
+- **ChargeCategory for MOSP.** The MOSP export has no charge type. It stays null unless the spike finds a provider-documented source or rule.
+- **OIDC subject details.** Confirm on the first token exchange (M1) the exact immutable environment subject and whether Azure matches it case-sensitively.
 
 ## Pending decisions
 
@@ -29,6 +32,7 @@ Tracked during product discovery. Resolved items move to `GLOSSARY.md` or `docs/
 
 - **M1**: configure Claude Code deny rules (write-verb `az`, `terraform apply`/`destroy`, `git push` to `main`) — see `docs/agents/boundaries.md`.
 - **Post-v0.1.0**: active notification via a private webhook (first item).
+- **Post-v0.1.0**: flag cost decreases as anomalies.
 - **Post-v0.1.0**: idle-resource heuristic "Resource with zero cost for N days".
 - **Post-v0.1.0**: automated `terraform plan` on pull requests.
 - **When needed**: presentation-time currency conversion with dated FX rates.

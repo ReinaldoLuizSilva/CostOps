@@ -57,12 +57,16 @@ The unit used to compare cost over time: a calendar month in UTC.
 _Avoid_: Billing period (that is the provider's invoice cycle, which may not align with calendar months)
 
 **Provisional**:
-The state of a Cost Record whose value the provider may still restate (open month or still within the provider's adjustment window). Provisional Cost Records are replaced on re-collection.
+The state of a Cost Record whose Charge Period is still inside the Re-collection Window, so the provider may still restate it. Provisional Cost Records are replaced on re-collection.
 _Avoid_: Estimated, draft
 
 **Final**:
-The state of a Cost Record whose period has closed past the cutoff; it is no longer re-collected.
+The state of a Cost Record whose whole charge month lies outside the Re-collection Window; it is no longer re-collected except by a Targeted Re-collection.
 _Avoid_: Closed, settled
+
+**Re-collection Window**:
+The trailing number of days (45 by default) that every scheduled Collection Run collects again, long enough to cover any provider's billing cycle and adjustment period.
+_Avoid_: Cutoff, lookback
 
 **Incomplete Day**:
 One of the most recent Charge Periods whose cost is known to be only partially reported by the provider. Incomplete Days are shown as such and excluded from comparisons and anomaly detection.
@@ -73,6 +77,10 @@ _Avoid_: Partial day, pending day
 **Collection Run**:
 One execution of CostOps that fetches provider data for a set of Sub Accounts and Charge Periods and turns it into Cost Records and Inventory Snapshots.
 _Avoid_: Job, sync, import
+
+**Targeted Re-collection**:
+A Collection Run requested explicitly by the Operator for named charge months, used for initial backfill and for correcting Final data. It is the only way a Final partition is rewritten.
+_Avoid_: Backfill job, manual fix, force refresh
 
 **Raw Extract**:
 The provider data received in one Collection Run, kept exactly as received, before any normalization.
@@ -89,7 +97,7 @@ The expected daily cost of one (Sub Account, service, Billing Currency) series, 
 _Avoid_: Average, normal cost, forecast
 
 **Cost Anomaly**:
-A complete day on which a series' cost deviates from its Baseline beyond both a statistical threshold and a minimum absolute amount, or on which a service shows cost for the first time in a Sub Account above that minimum. A Cost Anomaly only informs; it never triggers actions on Resources.
+A complete day on which a series' cost rises above its Baseline beyond both a statistical threshold and a minimum absolute amount, or on which a service shows cost for the first time in a Sub Account above that minimum. A Cost Anomaly only informs; it never triggers actions on Resources.
 _Avoid_: Spike, alert, outlier
 
 **Report**:

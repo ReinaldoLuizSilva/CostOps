@@ -7,3 +7,7 @@ In the MVP, CI runs only `terraform fmt -check` and `terraform validate` (no Azu
 ## Consequences
 
 - The only permanent infrastructure is the data storage, the state storage, the identity and the budget: no always-on compute.
+
+## Amendments (2026-11-27, specification phase)
+
+- **Rebuild, don't import.** Resources the Operator creates by hand in M1 (hands-on learning) live in a separate lab resource group. In M4, Terraform creates the definitive resources from scratch in their own resource group, and the lab resource group is deleted afterwards. This proves the infrastructure is reproducible from code alone. No data is lost because Blob writes start only in M4. Terraform `import` blocks remain available if a resource ever must be adopted.
