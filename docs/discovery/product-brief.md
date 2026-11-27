@@ -42,7 +42,8 @@ Azure already provides anomaly alerts, budgets and scheduled cost emails, for Az
 ## Time granularity and data finality
 
 - Cost Records are daily (UTC Charge Periods); comparisons use calendar months.
-- Each run re-collects the current month and, until it is Final, the previous month. Records move from Provisional to Final at a configurable cutoff (e.g. day 7 of the following month).
+- Each scheduled run re-collects every charge month that overlaps the Re-collection Window (default 45 days, configurable). A charge month becomes Final once its last day falls outside the window. This is provider-agnostic and covers billing cycles anchored on any day (decided in the specification phase, replacing the earlier "day N of the next month" cutoff).
+- Final partitions are rewritten only by a Targeted Re-collection explicitly requested by the Operator (also used for initial backfill).
 - The most recent ~3 days are Incomplete Days: flagged in reports and excluded from anomaly detection.
 
 ## Currency
@@ -58,7 +59,8 @@ Azure already provides anomaly alerts, budgets and scheduled cost emails, for Az
 ## Cost anomaly detection (v0.1.0)
 
 - Unit of analysis: (Sub Account, service, Billing Currency), with the Sub Account total as an additional signal.
-- Baseline: median of the last 28 complete days; anomaly when deviation exceeds both k × MAD and a configurable minimum absolute amount.
+- Baseline: median of the last 28 complete days; anomaly when the **increase** over the Baseline exceeds both k × MAD and a configurable minimum absolute amount. Decreases are not flagged in v0.1.0 (backlog).
+- Edge rules: MAD = 0 → only the minimum amount applies; a day with no Cost Records inside a successfully collected partition counts as zero; a day never collected is a gap and is neither evaluated nor used in the Baseline; negative amounts (credits) count in the net daily value; fewer than 14 evaluable days → "insufficient history" instead of a verdict.
 - "New cost" rule: a service with cost for the first time in a Sub Account, above the minimum amount.
 - Uses `EffectiveCost`; Incomplete Days are excluded; no evaluation with fewer than 14 days of history.
 - Anomalies are recorded and surfaced in the report/notification; no automatic action on Resources.
