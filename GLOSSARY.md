@@ -69,8 +69,12 @@ The trailing number of days (45 by default) that every scheduled Collection Run 
 _Avoid_: Cutoff, lookback
 
 **Incomplete Day**:
-One of the most recent Charge Periods whose cost is known to be only partially reported by the provider. Incomplete Days are shown as such and excluded from comparisons and anomaly detection.
+A Charge Period that was among the most recent days when the Collection Run that produced its published data ran, so its cost may still be only partially reported. Incomplete Days are shown as such and excluded from comparisons and anomaly detection.
 _Avoid_: Partial day, pending day
+
+**Collection Gap**:
+A Charge Period not covered by any successfully published collection. A Collection Gap is missing data, never zero cost.
+_Avoid_: Missing day, zero day
 
 ### Collection
 
@@ -95,6 +99,10 @@ _Avoid_: Mock data, fake data, sample data
 **Baseline**:
 The expected daily cost of one (Sub Account, service, Billing Currency) series, derived from its recent complete history.
 _Avoid_: Average, normal cost, forecast
+
+**Cost Basis**:
+The single cost measure (EffectiveCost or BilledCost) used for every figure and verdict in one Client's Report. Cost Bases are never mixed within a Report.
+_Avoid_: Cost type, cost metric
 
 **Cost Anomaly**:
 A complete day on which a series' cost rises above its Baseline beyond both a statistical threshold and a minimum absolute amount, or on which a service shows cost for the first time in a Sub Account above that minimum. A Cost Anomaly only informs; it never triggers actions on Resources.

@@ -60,7 +60,8 @@ Azure already provides anomaly alerts, budgets and scheduled cost emails, for Az
 
 - Unit of analysis: (Sub Account, service, Billing Currency), with the Sub Account total as an additional signal.
 - Baseline: median of the last 28 complete days; anomaly when the **increase** over the Baseline exceeds both k × MAD and a configurable minimum absolute amount. Decreases are not flagged in v0.1.0 (backlog).
-- Edge rules: MAD = 0 → only the minimum amount applies; a day with no Cost Records inside a successfully collected partition counts as zero; a day never collected is a gap and is neither evaluated nor used in the Baseline; negative amounts (credits) count in the net daily value; fewer than 14 evaluable days → "insufficient history" instead of a verdict.
+- Edge rules: MAD = 0 → only the minimum amount applies; only Complete days are analysed, and a Complete day with no Cost Records counts as zero; Incomplete Days and Collection Gaps are neither evaluated nor used in the Baseline; negative amounts (credits) count in the net daily value; fewer than 14 Complete days → "insufficient history" instead of a verdict.
+- One Cost Basis per Client per Report: EffectiveCost only when populated on every Cost Record in scope, otherwise BilledCost for everything.
 - "New cost" rule: a service with cost for the first time in a Sub Account, above the minimum amount.
 - Uses `EffectiveCost`; Incomplete Days are excluded; no evaluation with fewer than 14 days of history.
 - Anomalies are recorded and surfaced in the report/notification; no automatic action on Resources.
@@ -69,7 +70,7 @@ Azure already provides anomaly alerts, budgets and scheduled cost emails, for Az
 
 ## Report (v0.1.0)
 
-- Per Client: data freshness (last complete day, Provisional state, last Collection Run), month-to-date vs the same day range of the previous month (per currency), top services and largest changes, Cost Anomalies, Inventory Mismatches.
+- Per Client: data freshness (last complete day, Provisional state, last Collection Run), month-to-date total, and a month-to-date comparison on matched days (day numbers Complete in both months) with its coverage stated (per currency), top services and largest changes, Cost Anomalies, Inventory Mismatches.
 - Format: Markdown plus CSV tables, written to a private `reports/` container.
 - Never published to the repository, workflow artifacts, GitHub Pages or logs. The job summary shows only success/failure.
 - **Accepted limitation:** no active notification in v0.1.0; the Operator opens the Report to see anomalies. Active notification via a private webhook is the first post-v0.1.0 item.
