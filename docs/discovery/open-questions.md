@@ -19,7 +19,7 @@ Tracked during product discovery. Resolved items move to `GLOSSARY.md` or `docs/
 ## Open questions
 
 - ~~Finality cutoff vs provider billing periods.~~ **Resolved (specification phase):** a provider-agnostic Re-collection Window of 45 days; see `product-brief.md`.
-- **Cost basis when EffectiveCost is unavailable.** MOSP data has no amortized cost; under the no-fabrication rule EffectiveCost may be null. The specification uses EffectiveCost when populated for a whole series and BilledCost otherwise, and the Report states the basis used. Confirm after the spike.
+- **Cost basis when EffectiveCost is unavailable.** MOSP data has no amortized cost; under the no-fabrication rule EffectiveCost may be null. The specification picks one Cost Basis per Client per Report: EffectiveCost only when populated on every Cost Record in scope, otherwise BilledCost for everything, stated in the Report. Confirm after the spike.
 - **ChargeCategory for MOSP.** The MOSP export has no charge type. It stays null unless the spike finds a provider-documented source or rule.
 - **OIDC subject details.** Confirm on the first token exchange (M1) the exact immutable environment subject and whether Azure matches it case-sensitively.
 
