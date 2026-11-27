@@ -61,9 +61,9 @@ Azure already provides anomaly alerts, budgets and scheduled cost emails, for Az
 - Unit of analysis: (Sub Account, service, Billing Currency), with the Sub Account total as an additional signal.
 - Baseline: median of the last 28 complete days; anomaly when the **increase** over the Baseline exceeds both k × MAD and a configurable minimum absolute amount. Decreases are not flagged in v0.1.0 (backlog).
 - Edge rules: MAD = 0 → only the minimum amount applies; only Complete days are analysed, and a Complete day with no Cost Records counts as zero; Incomplete Days and Collection Gaps are neither evaluated nor used in the Baseline; negative amounts (credits) count in the net daily value; fewer than 14 Complete days → "insufficient history" instead of a verdict.
-- One Cost Basis per Client per Report: EffectiveCost only when populated on every Cost Record in scope, otherwise BilledCost for everything.
+- One [Cost Basis](../../GLOSSARY.md) per Client per Report: EffectiveCost only when populated on every Cost Record in scope, otherwise BilledCost for everything.
 - "New cost" rule: a service with cost for the first time in a Sub Account, above the minimum amount.
-- Uses `EffectiveCost`; Incomplete Days are excluded; no evaluation with fewer than 14 days of history.
+- Uses the Client's Cost Basis, never `EffectiveCost` unconditionally; Incomplete Days are excluded; no evaluation with fewer than 14 days of history.
 - Anomalies are recorded and surfaced in the report/notification; no automatic action on Resources.
 - k, minimum amount and windows are configurable and tuned against the synthetic dataset.
 - Month-over-month comparison is a report feature, not anomaly detection.

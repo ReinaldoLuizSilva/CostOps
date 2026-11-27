@@ -55,7 +55,7 @@ flowchart LR
 ```
 
 - **Runtime:** scheduled GitHub Actions workflow ([ADR-0005](docs/adr/0005-scheduled-github-actions-as-runtime.md)).
-- **Identity:** user-assigned managed identity federated to a GitHub Environment; Reader on the subscription, data writes scoped to one container ([ADR-0006](docs/adr/0006-identity-and-least-privilege.md)).
+- **Identity:** user-assigned managed identity federated to a GitHub Environment; Reader on the subscription; data-plane roles granted per container, read-only on the Client Registry (`config`) and write on `raw`, `cost-records`, `inventory` and `reports` ([ADR-0006](docs/adr/0006-identity-and-least-privilege.md)).
 - **Storage:** partitioned Parquet in Blob Storage, queried in-process with DuckDB; no database server ([ADR-0004](docs/adr/0004-partitioned-parquet-in-blob-queried-with-duckdb.md)).
 - **Infrastructure:** Terraform with remote state; `apply` is manual; a subscription budget guards spend ([ADR-0007](docs/adr/0007-terraform-remote-state-and-manual-apply.md)).
 - **Provider isolation:** each provider's collector is the only code that knows that provider's format; everything downstream speaks FOCUS.
@@ -64,7 +64,7 @@ flowchart LR
 ## Security principles
 
 - No secrets anywhere: OIDC workload identity federation; storage shared keys disabled.
-- Least privilege: read-only cost and inventory access; writes limited to the data container; CI cannot create resources or assign roles.
+- Least privilege: read-only cost and inventory access; storage writes granted per container and never to the Client Registry ([ADR-0006](docs/adr/0006-identity-and-least-privilege.md)); CI cannot create resources or assign roles.
 - Public repository, private data: no cost data, subscription IDs or resource names in code, logs or workflow artifacts. Tests use a deterministic **synthetic dataset**.
 - Storage reachable over its public endpoint but authenticated by Entra ID only ([ADR-0008](docs/adr/0008-public-storage-endpoint-with-entra-only-auth.md)).
 - AI agents assist with code and docs but never touch cloud resources or real data ([agent boundaries](docs/agents/boundaries.md)).
