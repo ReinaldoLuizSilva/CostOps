@@ -1,0 +1,3 @@
+# Storage is reachable over the public endpoint, protected by Entra ID authentication only
+
+The CostOps storage accounts keep their public network endpoint enabled, with public blob access disabled, shared key access disabled, TLS 1.2 minimum, and blob soft delete plus versioning (7–14 days) to recover from a wrong partition overwrite. Access control is identity-based only (Entra ID + RBAC, ADR-0006). An IP firewall is not viable because GitHub-hosted runners have no fixed IP range, and a private endpoint would require compute inside a virtual network, which the MVP does not have (ADR-0005), plus extra cost. This is an accepted risk: revisit when Collection Runs move into Azure.
